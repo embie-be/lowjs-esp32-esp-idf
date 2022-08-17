@@ -94,6 +94,7 @@ PYTHON_PLATFORM = platform.system() + '-' + platform.machine()
 PLATFORM_WIN32 = 'win32'
 PLATFORM_WIN64 = 'win64'
 PLATFORM_MACOS = 'macos'
+PLATFORM_MACOS_ARM64 = 'macos-arm64'
 PLATFORM_LINUX32 = 'linux-i686'
 PLATFORM_LINUX64 = 'linux-amd64'
 PLATFORM_LINUX_ARM32 = 'linux-armel'
@@ -117,6 +118,9 @@ PLATFORM_FROM_NAME = {
     'osx': PLATFORM_MACOS,
     'darwin': PLATFORM_MACOS,
     'Darwin-x86_64': PLATFORM_MACOS,
+    'Darwin-arm64': PLATFORM_MACOS_ARM64,
+    PLATFORM_MACOS_ARM64: PLATFORM_MACOS_ARM64,
+    'Darwin-arm64': PLATFORM_MACOS_ARM64,
     # Linux
     PLATFORM_LINUX64: PLATFORM_LINUX64,
     'linux64': PLATFORM_LINUX64,
@@ -252,7 +256,7 @@ def mkdir_p(path):
 
 def unpack(filename, destination):
     info('Extracting {0} to {1}'.format(filename, destination))
-    if filename.endswith(('.tar.gz', '.tgz')):
+    if filename.endswith('tar.gz'):
         archive_obj = tarfile.open(filename, 'r:gz')
     elif filename.endswith('zip'):
         archive_obj = zipfile.ZipFile(filename)
@@ -857,7 +861,7 @@ def get_python_env_path():
             idf_version_str = version_file.read()
     else:
         try:
-            idf_version_str = subprocess.check_output(['git', 'describe', '--tags'],
+            idf_version_str = subprocess.check_output(['git', 'describe'],
                                                       cwd=global_idf_path, env=os.environ).decode()
         except subprocess.CalledProcessError as e:
             warn('Git describe was unsuccessul: {}'.format(e))
